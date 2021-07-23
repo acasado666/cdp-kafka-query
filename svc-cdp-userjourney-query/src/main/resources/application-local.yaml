@@ -1,0 +1,53 @@
+#server:
+#  port: 8073
+#
+#spring:
+#  profiles: local
+#  config:
+#    use-legacy-processing: true
+#  kafka:
+#    # Use in local environments!
+#    bootstrap-servers: PLAINTEXT://localhost:9094
+#    properties.schema.registry.url: http://localhost:8081
+#    template:
+#      default-topic: de.id.dataflow.audience.analytics.user-journey
+#    producer:
+#      bootstrap-servers: localhost:9094
+#      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+#      value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
+#      properties:
+#        acks: all
+#        retries: 10
+#        retry.backoff.ms: 1000
+#    admin:
+#      properties:
+#        bootstrap.servers: localhost:9094
+#  sleuth:
+#    sampler:
+#      probability: 1.0
+#
+## -------------------------------------------------------------------------------------------------
+## Api related configurations
+## -------------------------------------------------------------------------------------------------
+#api:
+#  info:
+#    title: User Joourney Data Profile Stream Query API
+#    description: User Joourney Data Profile Stream
+#    version: 1.0.0
+#    terms-of-service: http://antonio.com/terms/
+#    contact:
+#      name: UIWI API Team
+#      email: antonio.casado@ippen-digital.de
+#      url: http://antonio.casado/team
+#    license:
+#      name: Apache 2.0
+#      url: http://www.apache.org/licenses/LICENSE-2.0.html
+#  logging:
+#    enable: true
+#    url-patterns: "/api/v1/*"
+#    requestIdParamName: CORRELATION_ID
+#
+#springdoc:
+#  swagger-ui:
+#    enabled: true
+#    path: /   # Redirect localhost:8080 to swagger-ui.html

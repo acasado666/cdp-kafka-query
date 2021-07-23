@@ -1,0 +1,116 @@
+include:
+  - project: uiwi/cdp/blueprints-and-templates/gitlab-ci-templates
+    ref: master
+    file: /.gitlab-ci-deployment.yaml
+
+stages:
+  - build
+  - staging
+  - production
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Stage: Build
+# ---------------------------------------------------------------------------------------------------------------------
+build:gradle-lifecycle:
+  stage: build
+  image: gradle:6.9-jdk11
+  script:
+    - gradle --build-cache build jib -Djib.to.auth.username=$DOCKER_USER -Djib.to.auth.password=$DOCKER_USER_PASSWORD
+  artifacts:
+    expire_in: 30 days
+    reports:
+      junit: '**/build/test-results/test/TEST-*.xml'
+  cache:
+    key: $CI_COMMIT_REF_NAME
+    policy: pull
+    paths:
+      - build
+      - .gradle
+  tags:
+    - uiwi-aws-staging
+
+.kustomize-build: &kustomize-build
+  stage: build
+  script:
+    - cd deployments/overlays/$KUSTOMIZE_VARIANT
+    - kustomize edit set image ippendigital/cdp-kafka-userjourney-query:$CI_BUILD_REF_NAME
+    - cd -
+    - kustomize build deployments/overlays/$KUSTOMIZE_VARIANT > $KUSTOMIZE_VARIANT.yaml
+    - kubectl apply -f $KUSTOMIZE_VARIANT.yaml --record --server-dry-run=true
+  when: always
+  artifacts:
+    expire_in: 30 days
+    paths:
+      - $KUSTOMIZE_VARIANT.yaml
+  tags:
+    - uiwi-aws-staging
+
+kustomize:1_stg:
+  <<: *kustomize-build
+  extends: .eksContextStagingUiwi
+  variables:
+    KUSTOMIZE_VARIANT: staging
+
+kustomize:2_prod:
+  <<: *kustomize-build
+  extends: .eksContextProductionUiwi
+  only:
+    - branches
+    - tags
+  variables:
+    KUSTOMIZE_VARIANT: production
+
+.kustomize-deployment: &kustomize-deployment
+  environment:
+    name: $CI_JOB_STAGE
+    action: start
+  script:
+    - kubectl apply -f $KUSTOMIZE_VARIANT.yaml --record
+  variables:
+    KUSTOMIZE_VARIANT: $CI_JOB_STAGE
+
+.kustomize-delete: &kustomize-delete
+  environment:
+    name: $CI_JOB_STAGE
+    action: stop
+  script:
+    - kubectl delete -f $KUSTOMIZE_VARIANT.yaml
+  variables:
+    KUSTOMIZE_VARIANT: $CI_JOB_STAGE
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Stage: Staging
+# ---------------------------------------------------------------------------------------------------------------------
+stg:1_deploy:
+  <<: *kustomize-deployment
+  extends: .eksContextStagingUiwi
+  environment:
+    name: $CI_JOB_STAGE
+  needs:
+    - job: build:gradle-lifecycle
+    - job: kustomize:1_stg
+
+stg:3_delete:
+  <<: *kustomize-delete
+  extends: .eksContextStagingUiwi
+  needs:
+    - job: kustomize:1_stg
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Stage: production
+# ---------------------------------------------------------------------------------------------------------------------
+
+prod:1_deploy:
+  <<: *kustomize-deployment
+  extends: .eksContextProductionUiwi
+  environment:
+    name: $CI_JOB_STAGE
+  needs:
+    - job: build:gradle-lifecycle
+    - job: kustomize:2_prod
+
+prod:3_delete:
+  <<: *kustomize-delete
+  extends: .eksContextProductionUiwi
+  needs:
+    - job: kustomize:2_prod

@@ -1,0 +1,16 @@
+pluginManagement {
+    repositories {
+        maven { url 'https://repo.spring.io/release' }
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
+rootProject.name = 'cdp-kafka-userjourney-query'
+
+include ':app-commons'
+include ':svc-cdp-userjourney-query'
+
+gradle.ext.springBootProjects = [
+        ':svc-cdp-userjourney-query'
+]

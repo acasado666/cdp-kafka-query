@@ -1,0 +1,4 @@
+spring:
+  kafka:
+    bootstrap-servers: PLAINTEXT://strimzi-kafka-cluster-kafka-bootstrap.bi-kafka:9092
+    properties.schema.registry.url: http://confluent-schema-registry.bi-kafka-management:8081

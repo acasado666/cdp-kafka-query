@@ -1,0 +1,69 @@
+{
+  "type"     : "record",
+  "name"     : "UserJourney",
+  "namespace": "de.id.dataflow.audience.analytics.model.userjourneys",
+  "doc"      : "All the Sesssions of a user in the last 30 days",
+  "fields"   : [
+    {
+      "name"   : "uid",
+      "type"   : ["null", "string"],
+      "default": null
+    },
+    {
+      "name"   : "lastSessionTimeStamp",
+      "doc"    : "The Time (UTC) of the beginning of the last session",
+      "type"   : ["null", "long"],
+      "default": null
+    },
+    {
+      "name"   : "firstSessionTimeStamp",
+      "doc"    : "The Time (UTC) of the beginning of the first session of the user journey",
+      "type"   : ["null", "long"],
+      "default": null
+    },
+    {
+      "name"   : "clientId",
+      "type"   : ["null", "long"],
+      "default": null
+    },
+    {
+      "name"   : "clientName",
+      "type"   : ["null", "string"],
+      "default": null
+    },
+    {
+      "name"   : "rfv",
+      "doc"    : "WIP, RFV Score (Recency, Frequency, Value Score)",
+      "type"   : ["null", "int"],
+      "default": null
+    },
+    {
+      "name"   : "fuseValue",
+      "doc"    : "Loyalty segment of the user. Considering the number of days a User started a Session.",
+      "aliases": ["rfv"],
+      "type"   : [
+        {
+          "type"   : "enum",
+          "name"   : "FuseSegment",
+          "doc"    : "All rfv types allowed for the loyalty user segment",
+          "aliases": ["RFV"],
+          "symbols": [
+            "CASUAL_READER",
+            "LOYAL_READER",
+            "BRAND_LOVER"
+          ]
+        }
+      ],
+      "default": "CASUAL_READER"
+    },
+    {
+      "name": "sessionEventReceivedTimestamps",
+      "doc": "The timestamps (UTC) when sessions began",
+      "type": {
+        "type"      : "array",
+        "items"     : "long"
+      },
+      "default": []
+    }
+  ]
+}

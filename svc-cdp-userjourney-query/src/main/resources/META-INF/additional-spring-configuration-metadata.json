@@ -1,0 +1,11 @@
+{
+  "properties": [
+    {
+      "name": "cdp-query-uj.sourceTopicName",
+      "type": "java.lang.String",
+      "description": "TODO.",
+      "defaultValue": "de.id.dataflow.audience.analytics.user-journey"
+    }
+  ]
+}
+

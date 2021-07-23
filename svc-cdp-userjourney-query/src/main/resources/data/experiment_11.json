@@ -1,0 +1,18 @@
+{
+  "uid": {
+    "string": "679b26bd-c134-a0d4-aa74-1d1aafa56c23"
+  },
+  "lastSessionTimeStamp": {
+    "long": 1623662982736
+  },
+  "clientId": null,
+  "clientName": {
+    "string": "HNA"
+  },
+  "rfv": {
+    "de.id.dataflow.audience.analytics.model.userjourneys.RFV": "CASUAL_READER"
+  },
+  "sessionEventReceivedTimestamps": [
+    1623662982736
+  ]
+}

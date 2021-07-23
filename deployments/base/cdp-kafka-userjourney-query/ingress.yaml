@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    fluxcd.io/automated: "false"
+    kubernetes.io/ingress.class: elb-internal
+  name: kafka-userjourney-query
+spec:
+  rules:
+    - host: user-journey.cdp.staging.ippen.space
+      http:
+        paths:
+          - backend:
+              serviceName: kafka-userjourney-query
+              servicePort: 8080
+            path: /
+            pathType: ImplementationSpecific

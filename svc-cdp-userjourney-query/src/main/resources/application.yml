@@ -1,0 +1,100 @@
+# -------------------------------------------------------------------------------------------------
+# App specific properties
+# -------------------------------------------------------------------------------------------------
+#server:
+#    port: 8080
+
+
+
+# -------------------------------------------------------------------------------------------------
+# Spring Boot related configurations
+# -------------------------------------------------------------------------------------------------
+#spring:
+#    profiles:
+#        active: dev
+
+spring:
+    kafka:
+        bootstrap-servers: PLAINTEXT://strimzi-kafka-cluster-kafka-bootstrap.bi-kafka:9092
+        properties:
+            schema.registry.url: http://confluent-schema-registry.bi-kafka-management:8081
+        template:
+            default-topic: de.id.dataflow.audience.analytics.user-journey
+        streams:
+            properties:
+                default.deserialization.exception.handler: org.apache.kafka.streams.errors.LogAndContinueExceptionHandler
+                default:
+                    key.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+                    value.serde: io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde
+                topology.optimization: all
+            application-id: cdp-user-journey-query
+        producer:
+            key-serializer: org.apache.kafka.common.serialization.Serdes$StringSerde
+            value-serializer: io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde
+            properties:
+                acks: all
+                retries: 10
+                retry.backoff.ms: 1000
+        consumer:
+            key-serializer: org.apache.kafka.common.serialization.Serdes$StringSerde
+            value-serializer: io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde
+            properties:
+                acks: all
+                retries: 10
+                retry.backoff.ms: 1000
+        admin:
+            properties:
+                bootstrap.servers: PLAINTEXT://strimzi-kafka-cluster-kafka-bootstrap.bi-kafka:9092
+
+# -------------------------------------------------------------------------------------------------
+# Kafka related configurations
+# -------------------------------------------------------------------------------------------------
+#kafka:
+#    bootstrapAddress: PLAINTEXT://strimzi-kafka-cluster-kafka-bootstrap.bi-kafka:9092
+#    schema-registry-url: http://confluent-schema-registry.bi-kafka-management:8081
+#    topics:
+#        msgUserData:
+#            name: de.id.dataflow.audience.analytics.user-journey
+#
+#    streams:
+#        application-id: cdp-user-journey-query
+#        stateStoreName:  userJourneyDataStore
+#        sourceTopicName: de.id.dataflow.audience.analytics.user-journey
+
+# -------------------------------------------------------------------------------------------------
+# Api related configurations
+# -------------------------------------------------------------------------------------------------
+api:
+    info:
+        title: Customer Data Profile Stream Query API
+        description: Query Customer Data Profile Streams
+        version: 1.0.0
+        terms-of-service: http://antonio.com/terms/
+        contact:
+            name: UIWI API Team
+            email: antonio.casado@ippen-digital.de
+            url: http://antonio.casado/team
+        license:
+            name: Apache 2.0
+            url: http://www.apache.org/licenses/LICENSE-2.0.html
+    logging:
+        enable: true
+        url-patterns: "/api/v1/*"
+        requestIdParamName: CORRELATION_ID
+
+springdoc:
+    swagger-ui:
+        enabled: true
+        path: /   # Redirect localhost:8080 to swagger-ui.html
+
+#management:
+#    endpoints:
+#        web:
+#            exposure:
+#                include: "*"
+#    endpoint:
+#        health:
+#            probes:
+#                enabled: true
+#            show-components: ALWAYS
+#            show-details: ALWAYS
